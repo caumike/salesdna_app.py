@@ -214,7 +214,7 @@ def main():
         
         # Display radar chart
         chart_buf = plot_radar_chart(scores)
-        st.image(chart_buf, caption="Your SalesDNA Radar Chart", use_column_width=True)
+        st.image(chart_buf, caption="Your SalesDNA Radar Chart", use_container_width=True)
         
         run_evaluation_process()
         
