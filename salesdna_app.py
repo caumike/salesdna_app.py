@@ -22,6 +22,35 @@ benchmarks = {
     "Average sales cycle": "84 days"
 }
 
+# Improvement suggestions based on base pairs
+improvement_suggestions = {
+    "ICP ↔ Value Proposition": [
+        "Refine your Ideal Customer Profile (ICP) by conducting more customer interviews to identify urgent pains.",
+        "Update your messaging to explicitly address the ICP's pain points in at least 70% of your content.",
+        "Revise your homepage and marketing materials to clearly communicate who you serve, what you offer, and why now."
+    ],
+    "Channels ↔ ICP Behavior": [
+        "Research and prioritize the top 2-3 channels where your ICP spends time, and allocate 80%+ of your budget there.",
+        "Implement tracking for lead sources, engagement, and cost per qualified opportunity in each channel.",
+        "Develop at least one scalable, non-founder-dependent channel with CAC below your target."
+    ],
+    "Processes ↔ Buying Journey": [
+        "Map out your ICP's buying journey in detail through customer feedback and data analysis.",
+        "Align content, CTAs, and touchpoints to each stage of the buying journey to reduce drop-offs.",
+        "Document your sales processes to make them repeatable across the team."
+    ],
+    "Tools ↔ Efficiency": [
+        "Integrate your CRM, marketing automation, and analytics tools for seamless data flow.",
+        "Automate repetitive tasks like follow-up emails to free up team time.",
+        "Move away from manual spreadsheets by setting up automated tracking for key metrics."
+    ],
+    "Team ↔ Execution Capability": [
+        "Create a comprehensive GTM playbook that all sales and marketing team members follow.",
+        "Define clear KPIs focused on ICP conversion, track them weekly, and avoid vanity metrics.",
+        "Hire or consult a GTM leader with experience scaling beyond your current stage."
+    ]
+}
+
 def display_checklist():
     st.markdown("### DIY Diagnostic Checklist")
     
@@ -79,6 +108,43 @@ def display_results(scores, average):
         st.warning("Moderate shape. Identify weak areas and improve before scaling.")
     else:
         st.error("Weak shape = fix before you spend more. Focus on foundational alignments.")
+
+def generate_summary(scores, average):
+    st.markdown("### Personalized Results Summary and Action Plan")
+    
+    if average >= 8:
+        st.write("**Overall Assessment:** Your SalesDNA is strong and well-aligned. You're in a great position to scale your GTM efforts sustainably. Focus on maintaining this balance while monitoring for any emerging misalignments.")
+    elif average >= 5:
+        st.write("**Overall Assessment:** Your GTM strategy has solid foundations but shows some imbalances. Addressing the weaker areas will help you achieve more consistent revenue growth and better prepare for funding challenges.")
+    else:
+        st.write("**Overall Assessment:** Your SalesDNA indicates significant misalignments that could hinder growth and lead to inefficient resource use. Prioritize foundational fixes to avoid burning runway on ineffective tactics.")
+    
+    st.write("**Key Insights from Your Scores:**")
+    low_scores = [bp for bp, score in zip(base_pairs, scores) if score < 6]
+    if low_scores:
+        st.write(f"You have lower scores in: {', '.join(low_scores)}. These are critical areas to address first, as they form the base of your GTM health.")
+    else:
+        st.write("All areas are relatively strong, but continue iterating for optimization.")
+    
+    high_scores = [bp for bp, score in zip(base_pairs, scores) if score >= 8]
+    if high_scores:
+        st.write(f"Strengths include: {', '.join(high_scores)}. Leverage these to support improvements in weaker areas.")
+    
+    st.write("**Recommended Actions:**")
+    st.write("Based on your scores, here are prioritized steps to improve. Focus on areas below 6 first:")
+    for bp, score in zip(base_pairs, scores):
+        if score < 6:
+            st.markdown(f"**{bp} (Score: {score}/10) - High Priority:**")
+            for suggestion in improvement_suggestions[bp]:
+                st.write(f"- {suggestion}")
+        elif score < 8:
+            st.markdown(f"**{bp} (Score: {score}/10) - Medium Priority:**")
+            for suggestion in improvement_suggestions[bp][:2]:  # Limit to top 2 for medium
+                st.write(f"- {suggestion}")
+        else:
+            st.markdown(f"**{bp} (Score: {score}/10) - Low Priority:** Maintain current efforts.")
+
+    st.write("Re-run this diagnostic after implementing changes and running experiments to track progress.")
 
 def display_benchmarks():
     st.markdown("### Industry Benchmarks for Series A (from the framework)")
@@ -142,6 +208,9 @@ def main():
     if st.button("Calculate Results"):
         average = calculate_average(scores)
         display_results(scores, average)
+        
+        # Generate and display personalized summary
+        generate_summary(scores, average)
         
         # Display radar chart
         chart_buf = plot_radar_chart(scores)
